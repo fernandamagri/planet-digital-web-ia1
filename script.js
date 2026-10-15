@@ -22,3 +22,80 @@ if(has(t,"hola","buenas","gracias","planet"))return "¡Hola! Soy la simulación 
 return "No encontré una regla para esa consulta. Esta demostración no utiliza IA generativa. Podés preguntar sobre notebooks, mochilas o servicio técnico.";
 }
 const chat=document.getElementById("mensajes");const input=document.getElementById("consulta");function msg(t,cl){let el=document.createElement("div");el.className="bubble "+cl;el.textContent=t;chat.append(el);chat.scrollTop=chat.scrollHeight}function enviar(t){if(!t.trim())return;msg(t,"user");msg(responder(t),"");input.value="";input.focus()}function reset(){chat.replaceChildren();msg("¡Hola! 👋 Soy la demostración de Planet.com. Esta web utiliza respuestas programadas, no inteligencia artificial generativa. ¿Qué querés consultar?","")}document.getElementById("form").addEventListener("submit",e=>{e.preventDefault();enviar(input.value)});document.querySelectorAll("[data-q]").forEach(x=>x.addEventListener("click",()=>enviar(x.dataset.q)));document.getElementById("reset").addEventListener("click",reset);reset();
+
+/* Logo institucional: transparencia generada localmente, sin redibujar la marca.
+   La composición original incluye ".com" fuera del círculo: no recortar. */
+(function prepararLogoTransparente() {
+  const logo = document.querySelector(".site-header .brand-logo img");
+  if (!logo) return;
+  function procesar() {
+    try {
+      if (!logo.naturalWidth || !logo.naturalHeight) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = 520;
+      canvas.height = Math.round(520 * logo.naturalHeight / logo.naturalWidth);
+      const w = canvas.width, h = canvas.height;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      ctx.drawImage(logo, 0, 0, w, h);
+      const frame = ctx.getImageData(0, 0, w, h);
+      const pixels = frame.data;
+      const gray = new Uint8Array(w * h);
+      const dark = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = y * w + x, p = i * 4;
+          const g = Math.round((pixels[p] + pixels[p + 1] + pixels[p + 2]) / 3);
+          gray[i] = g;
+          if (g < 195 && x > 0.41 * w && y > 0.61 * h && y < 0.84 * h) dark[i] = 1;
+        }
+      }
+      // Dilatación eficiente de 2 pasadas para proteger el contorno blanco de ".com".
+      const radius = 7;
+      const horizontal = new Uint8Array(w * h), nearby = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        const row = y * w;
+        for (let x = 0; x < w; x++) {
+          for (let dx = -radius; dx <= radius; dx++) {
+            if (x + dx >= 0 && x + dx < w && dark[row + x + dx]) {
+              horizontal[row + x] = 1; break;
+            }
+          }
+        }
+      }
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          for (let dy = -radius; dy <= radius; dy++) {
+            if (y + dy >= 0 && y + dy < h && horizontal[(y + dy) * w + x]) {
+              nearby[y * w + x] = 1; break;
+            }
+          }
+        }
+      }
+      const cx = 587 / 1374 * w, cy = 570 / 1145 * h;
+      const rx = 535 / 1374 * w, ry = 512 / 1145 * h;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const i = y * w + x, g = gray[i];
+          const oval = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+          const circular = Math.max(0, Math.min(255, (1.015 - oval) * 16000));
+          let outside = 0;
+          if (nearby[i]) {
+            outside = Math.max(
+              Math.max(0, Math.min(255, (240 - g) / 30 * 255)),
+              Math.max(0, Math.min(255, (g - 249) / 3 * 255))
+            );
+          }
+          pixels[i * 4 + 3] = Math.round(Math.max(circular, outside));
+        }
+      }
+      ctx.putImageData(frame, 0, 0);
+      logo.src = canvas.toDataURL("image/png");
+    } catch (err) {
+      // Si no se puede procesar, el original queda visible.
+      console.warn("Logo Planet.com: se mantiene la imagen original.", err);
+    }
+  }
+  if (logo.complete && logo.naturalWidth) procesar();
+  else logo.addEventListener("load", procesar, { once: true });
+})();
