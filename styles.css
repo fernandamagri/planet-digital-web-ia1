@@ -45,3 +45,58 @@
   .site-header .brand-logo { width: 100px; height: 85px; flex-basis: 100px; }
   .site-header .brand { gap: 8px; }
 }
+
+/* =========================================================
+   PLANET.COM — GLOSS INSTITUCIONAL
+   Brillo sutil en la superficie del logo; sin recortar ".com".
+   No altera la imagen institucional ni el resto de la web.
+   ========================================================= */
+
+.site-header .brand-logo {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Destello difuso solo sobre el sector superior del círculo negro. */
+.site-header .brand-logo::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  left: 6%;
+  top: 5%;
+  width: 65%;
+  height: 53%;
+  border-radius: 50%;
+  background: linear-gradient(
+    168deg,
+    rgba(255, 255, 255, 0.29) 0%,
+    rgba(255, 255, 255, 0.13) 29%,
+    rgba(255, 255, 255, 0.04) 51%,
+    rgba(255, 255, 255, 0) 75%
+  );
+  transform: rotate(-14deg);
+  opacity: 0.66;
+  mix-blend-mode: screen;
+}
+
+/* Reflejo estrecho que aporta acabado vidrio, sin tapar el texto. */
+.site-header .brand-logo::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  left: 17%;
+  top: 12%;
+  width: 30%;
+  height: 5%;
+  border-radius: 100%;
+  background: rgba(255, 255, 255, 0.20);
+  filter: blur(3px);
+  transform: rotate(-13deg);
+  opacity: 0.58;
+}
+
+.site-header .brand-logo img {
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.22));
+}
