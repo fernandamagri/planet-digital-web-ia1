@@ -9,3 +9,39 @@
 .site-header .tag {flex-shrink:0}
 @media(max-width:850px){.site-header{margin-bottom:22px}.site-header .brand-logo{width:76px;height:76px;flex-basis:76px}}
 @media(max-width:430px){.site-header{flex-wrap:wrap;gap:14px}.site-header .brand-logo{width:64px;height:64px;flex-basis:64px}.site-header .brand-identity strong{font-size:18px}.site-header .brand-identity span{font-size:11px}}
+
+
+/* Marca con fondo transparente, sin recortar el ".com" exterior. */
+.site-header .brand { gap: 11px; }
+.site-header .brand-logo {
+  width: 160px;
+  height: 135px;
+  flex: 0 0 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.site-header .brand-logo img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+@media (max-width: 850px) {
+  .site-header .brand-logo { width: 132px; height: 112px; flex-basis: 132px; }
+}
+@media (max-width: 430px) {
+  .site-header .brand-logo { width: 100px; height: 85px; flex-basis: 100px; }
+  .site-header .brand { gap: 8px; }
+}
